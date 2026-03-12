@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "title": "Cielito Lindo",
+    "artist": "Pedro Infante",
+    "genre": "Mariachi",
+    "image": "/images/portadas/cielito-lindo.jpg",
+    "pdf": "/pdfs/cielito-lindo.pdf"
+  },
+  {
+    "id": 2,
+    "title": "Bésame Mucho",
+    "artist": "Consuelo Velázquez",
+    "genre": "Bolero",
+    "image": "/images/portadas/besame-mucho.jpg",
+    "pdf": "/pdfs/besame-mucho.pdf"
+  },
+  {
+    "id": 3,
+    "title": "La Bamba",
+    "artist": "Ritchie Valens",
+    "genre": "Rock and Roll",
+    "image": "/images/portadas/la-bamba.jpg",
+    "pdf": "/pdfs/la-bamba.pdf"
+  },
+  {
+    "id": 4,
+    "title": "Summertime",
+    "artist": "George Gershwin",
+    "genre": "Jazz",
+    "image": "/images/portadas/summertime.jpg",
+    "pdf": "/pdfs/summertime.pdf"
+  },
+  {
+    "id": 5,
+    "title": "Fly Me to the Moon",
+    "artist": "Frank Sinatra",
+    "genre": "Jazz",
+    "image": "/images/portadas/flymeto.jpg",
+    "pdf": "/pdfs/fly-me-to-the-moon.pdf"
+  },
+  {
+    "id": 6,
+    "title": "My Way",
+    "artist": "Frank Sinatra",
+    "genre": "Vocal Jazz",
+    "image": "/images/portadas/my-way.jpg",
+    "pdf": "/pdfs/my-way.pdf"
+  }
+]
