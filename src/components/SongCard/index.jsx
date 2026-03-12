@@ -1,5 +1,6 @@
 import React from 'react';
 import * as S from './styles';
+import { FiDownload } from "react-icons/fi";
 
 export function SongCard({ title, artist, genre, image, onClick }) {
   return (
@@ -7,7 +8,7 @@ export function SongCard({ title, artist, genre, image, onClick }) {
       <S.ImageContainer>
         <S.Image src={image} alt={title} />
         <S.Overlay>
-          <S.PlayIcon>▶</S.PlayIcon>
+          <S.PlayIcon><FiDownload></FiDownload></S.PlayIcon>
         </S.Overlay>
       </S.ImageContainer>
       
