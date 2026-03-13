@@ -37,6 +37,8 @@ export function GenreDetail() {
             textShadow: '0 4px 12px rgba(0,0,0,0.8)',
             fontWeight: 'bold',
             textTransform: 'uppercase',
+            fontFamily: '"Playfair Display", serif',
+            
           }}>
             {genre.name}
           </h1>
