@@ -1,21 +1,20 @@
 import { GlobalStyles } from './styles/GlobalStyles';
 import { Layout, Container, Section, Grid } from './components/Layout';
-import { SongCard } from './components/SongCard';
+import { GenreCard } from './components/GenreCard';
 import { colors } from './styles/colors';
-import songsData from './data/songs.json';
+import genresData from './data/genres.json';
 
 function App() {
-
-  const handleSongClick = (song) => {
-    console.log("Clicked:", song);
+  const handleGenreClick = (genre) => {
+    console.log("Clicked género:", genre);
+    // Aquí después navegaremos a la página del género
   };
 
   return (
     <>
       <GlobalStyles />
       <Layout>
-
-        {/* HERO */}
+        {/* Hero Section */}
         <div style={{
           height: '60vh',
           background: `linear-gradient(180deg, ${colors.background} 0%, ${colors.backgroundLight} 100%)`,
@@ -43,34 +42,31 @@ function App() {
           </p>
         </div>
 
-        {/* GRID DE CANCIONES */}
+        {/* Grid de Géneros */}
         <Section>
           <Container>
-
             <h2 style={{
               color: colors.text,
-              fontSize: '1.8rem',
+              fontSize: '2.8rem',
               marginBottom: '2rem'
             }}>
-              Canciones Populares
+              Géneros Musicales
             </h2>
 
             <Grid>
-              {songsData.map(song => (
-                <SongCard
-                  key={song.id}
-                  title={song.title}
-                  artist={song.artist}
-                  genre={song.genre}
-                  image={song.image}
-                  onClick={() => handleSongClick(song)}
+              {genresData.map(genre => (
+                <GenreCard
+                  key={genre.id}
+                  name={genre.name}
+                  image={genre.image}
+                  songsCount={genre.songsCount}
+                  artistsCount={genre.artistsCount}
+                  onClick={() => handleGenreClick(genre)}
                 />
               ))}
             </Grid>
-
           </Container>
         </Section>
-
       </Layout>
     </>
   );

@@ -4,6 +4,7 @@
     "title": "Cielito Lindo",
     "artist": "Pedro Infante",
     "genre": "Mariachi",
+    "genreId": "regional-mexicano",
     "image": "/images/portadas/cielito-lindo.jpg",
     "pdf": "/pdfs/cielito-lindo.pdf"
   },
@@ -12,6 +13,7 @@
     "title": "Bésame Mucho",
     "artist": "Consuelo Velázquez",
     "genre": "Bolero",
+    "genreId": "balada-romantica",
     "image": "/images/portadas/besame-mucho.jpg",
     "pdf": "/pdfs/besame-mucho.pdf"
   },
@@ -20,6 +22,7 @@
     "title": "La Bamba",
     "artist": "Ritchie Valens",
     "genre": "Rock and Roll",
+    "genreId": "rock-latino",
     "image": "/images/portadas/la-bamba.jpg",
     "pdf": "/pdfs/la-bamba.pdf"
   },
@@ -28,6 +31,7 @@
     "title": "Summertime",
     "artist": "George Gershwin",
     "genre": "Jazz",
+    "genreId": "musica-clasica",
     "image": "/images/portadas/summertime.jpg",
     "pdf": "/pdfs/summertime.pdf"
   },
@@ -36,6 +40,7 @@
     "title": "Fly Me to the Moon",
     "artist": "Frank Sinatra",
     "genre": "Jazz",
+    "genreId": "pop-rock",
     "image": "/images/portadas/flymeto.jpg",
     "pdf": "/pdfs/fly-me-to-the-moon.pdf"
   },
@@ -44,6 +49,7 @@
     "title": "My Way",
     "artist": "Frank Sinatra",
     "genre": "Vocal Jazz",
+    "genreId": "pop-rock",
     "image": "/images/portadas/my-way.jpg",
     "pdf": "/pdfs/my-way.pdf"
   }

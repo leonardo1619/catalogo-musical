@@ -1,0 +1,44 @@
+[
+  {
+    "id": "regional-mexicano",
+    "name": "Regional Mexicano",
+    "image": "/images/genres/regional-mexicano.jpg",
+    "songsCount": 500,
+    "artistsCount": 25
+  },
+  {
+    "id": "cumbia",
+    "name": "Cumbia",
+    "image": "/images/genres/cumbia.jpg",
+    "songsCount": 320,
+    "artistsCount": 18
+  },
+  {
+    "id": "balada-romantica",
+    "name": "Balada Romántica",
+    "image": "/images/genres/baladaromantica.jpg",
+    "songsCount": 200,
+    "artistsCount": 12
+  },
+  {
+    "id": "rock-latino",
+    "name": "Rock Latino",
+    "image": "/images/genres/rocklatino.jpg",
+    "songsCount": 180,
+    "artistsCount": 15
+  },
+  {
+    "id": "pop-rock",
+    "name": "Pop Rock",
+    "image": "/images/genres/poprock.jpg",
+    "songsCount": 250,
+    "artistsCount": 20
+  },
+  {
+    "id": "musica-clasica",
+    "name": "Música Clásica",
+    "image": "/images/genres/musicaclasica.jpg",
+    "songsCount": 150,
+    "artistsCount": 10
+  }
+]

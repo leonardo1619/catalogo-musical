@@ -19,7 +19,7 @@ export const layout = {
   },
   
   // Alturas importantes
-  headerHeight: '70px',
+  headerHeight: '90px',
   heroHeight: '80vh',
   heroHeightMobile: '60vh',
   

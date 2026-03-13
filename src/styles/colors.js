@@ -5,18 +5,18 @@ export const colors = {
   primaryLight: '#87BB88',
   accent: '#7EBB41',
   
-  // Neutros (Netflix-style)
-  background: '#141414',
-  backgroundLight: '#1F1F1F',
-  backgroundCard: '#2F2F2F',
+  // Neutros - TEMA CLARO CÁLIDO
+  background: '#FAFAF9',
+  backgroundLight: '#F5F5F4',
+  backgroundCard: '#FFFFFF',
   
   // Texto
-  text: '#FFFFFF',
-  textSecondary: '#ACACAC',
-  textTertiary: '#808080',
+  text: '#1C1917',
+  textSecondary: '#78716C',
+  textTertiary: '#A8A29E',
   
   // Efectos
-  hover: 'rgba(103, 169, 67, 0.15)',
-  shadow: 'rgba(0, 0, 0, 0.75)',
-  shadowGreen: 'rgba(103, 169, 67, 0.4)',
+  hover: 'rgba(103, 169, 67, 0.08)',
+  shadow: 'rgba(0, 0, 0, 0.08)',
+  shadowGreen: 'rgba(103, 169, 67, 0.15)',
 };

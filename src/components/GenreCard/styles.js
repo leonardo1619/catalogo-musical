@@ -29,7 +29,7 @@ export const PlayIcon = styled.div`
   height: 60px;
   border-radius: 50%;
   background-color: ${colors.primary};
-  color: ${colors.background};
+  color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,60 +44,49 @@ export const ImageContainer = styled.div`
   aspect-ratio: 2/3;
   overflow: hidden;
   border-radius: ${layout.borderRadius.medium};
-  background-color: ${colors.backgroundCard};
+  background-color: #F5F5F5;
+  border: 1px solid #E5E5E5;
 `;
 
 export const Info = styled.div`
-  padding: 1rem 0.5rem;
+  padding: 1.5rem 1rem;
+  text-align: center;
 `;
 
 export const Title = styled.h3`
   color: ${colors.text};
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 0.25rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 `;
 
-export const Artist = styled.p`
+export const Stats = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`;
+
+export const Stat = styled.span`
   color: ${colors.textSecondary};
   font-size: 0.875rem;
-  margin-bottom: 0.25rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-weight: 500;
 `;
 
-export const Genre = styled.span`
-  color: ${colors.textTertiary};
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-`;
-
-// Card debe estar al final para poder referenciar los componentes anteriores
 export const Card = styled.div`
   cursor: pointer;
   transition: transform ${layout.transitions.normal}, 
               box-shadow ${layout.transitions.normal};
   
   &:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 24px ${colors.shadowGreen};
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px ${colors.shadowGreen};
     
-    /* Ahora podemos referenciar Overlay porque ya está definido arriba */
-    ${Overlay} {
-      opacity: 1;
-    }
     
     ${Image} {
-      transform: scale(1.1);
+      transform: scale(1.05);
     }
     
-    ${PlayIcon} {
-      transform: scale(1.1);
-    }
   }
 `;
