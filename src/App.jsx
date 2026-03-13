@@ -1,74 +1,15 @@
-import { GlobalStyles } from './styles/GlobalStyles';
-import { Layout, Container, Section, Grid } from './components/Layout';
-import { GenreCard } from './components/GenreCard';
-import { colors } from './styles/colors';
-import genresData from './data/genres.json';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Home } from './pages/Home';
+import { GenreDetail } from './pages/GenreDetail';
 
 function App() {
-  const handleGenreClick = (genre) => {
-    console.log("Clicked género:", genre);
-    // Aquí después navegaremos a la página del género
-  };
-
   return (
-    <>
-      <GlobalStyles />
-      <Layout>
-        {/* Hero Section */}
-        <div style={{
-          height: '60vh',
-          background: `linear-gradient(180deg, ${colors.background} 0%, ${colors.backgroundLight} 100%)`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          gap: '1rem',
-        }}>
-          <h1 style={{
-            color: colors.primary,
-            fontSize: '3rem',
-            textAlign: 'center',
-            padding: '0 1rem',
-          }}>
-            🎵 Catálogo Musical
-          </h1>
-
-          <p style={{
-            color: colors.textSecondary,
-            fontSize: '1.2rem',
-            textAlign: 'center',
-          }}>
-            Academia de Arte Musical
-          </p>
-        </div>
-
-        {/* Grid de Géneros */}
-        <Section>
-          <Container>
-            <h2 style={{
-              color: colors.text,
-              fontSize: '2.8rem',
-              marginBottom: '2rem'
-            }}>
-              Géneros Musicales
-            </h2>
-
-            <Grid>
-              {genresData.map(genre => (
-                <GenreCard
-                  key={genre.id}
-                  name={genre.name}
-                  image={genre.image}
-                  songsCount={genre.songsCount}
-                  artistsCount={genre.artistsCount}
-                  onClick={() => handleGenreClick(genre)}
-                />
-              ))}
-            </Grid>
-          </Container>
-        </Section>
-      </Layout>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/genero/:genreId" element={<GenreDetail />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
