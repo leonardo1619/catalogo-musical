@@ -1,0 +1,24 @@
+[
+  {
+    "id": "natanael-cano",
+    "name": "Natanael Cano",
+    "genreId": "regional-mexicano",
+    "image": "/images/artists/natanael-cano.jpg",
+    "heroImage": "/images/artists/natanael-cano-hero.jpg", 
+    "songsCount": 45
+  },
+  {
+    "id": "grupo-frontera",
+    "name": "Grupo Frontera",
+    "genreId": "regional-mexicano",
+    "image": "/images/artists/grupo-frontera.jpg",
+    "songsCount": 32
+  },
+  {
+    "id": "peso-pluma",
+    "name": "Peso Pluma",
+    "genreId": "regional-mexicano",
+    "image": "/images/artists/peso-pluma.jpg",
+    "songsCount": 38
+  }
+]

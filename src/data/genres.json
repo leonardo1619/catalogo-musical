@@ -27,7 +27,7 @@
     "id": "rock-latino",
     "name": "Rock Latino",
     "image": "/images/genres/rocklatino.jpg",
-    "heroImage": "/images/genres/rocklatino-hero.jpg",
+    "heroImage": "/images/genres/heroes/rocklatino-hero.jpg",
     "songsCount": 180,
     "artistsCount": 15
   },
@@ -35,7 +35,7 @@
     "id": "pop-rock",
     "name": "Pop Rock",
     "image": "/images/genres/poprock.jpg",
-    "heroImage": "/images/genres/poprock-hero.jpg",
+    "heroImage": "/images/genres/heroes/poprock-hero.jpg",
     "songsCount": 250,
     "artistsCount": 20
   },
@@ -43,7 +43,7 @@
     "id": "musica-clasica",
     "name": "Música Clásica",
     "image": "/images/genres/musicaclasica.jpg",
-    "heroImage": "/images/genres/musicaclasica-hero.jpg",
+    "heroImage": "/images/genres/heroes/clasico-hero.jpg",
     "songsCount": 150,
     "artistsCount": 10
   }

@@ -49,7 +49,7 @@ export function Home() {
           <Container>
             <h2 style={{
               color: colors.text,
-              fontSize: '1.8rem',
+              fontSize: '2.8rem',
               marginBottom: '2rem'
             }}>
               Géneros Musicales

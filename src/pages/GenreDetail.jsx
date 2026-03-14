@@ -1,14 +1,23 @@
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { GlobalStyles } from '../styles/GlobalStyles';
-import { Layout, Container, Section } from '../components/Layout';
+import { Layout, Container, Section, Grid } from '../components/Layout';
+import { ArtistCard } from '../components/ArtistCard';
 import { colors } from '../styles/colors';
 import genresData from '../data/genres.json';
+import artistsData from '../data/artists.json';
 
 export function GenreDetail() {
+  const navigate = useNavigate();
   const { genreId } = useParams();
   
-  // Buscar info del género
   const genre = genresData.find(g => g.id === genreId);
+  
+  // Filtrar artistas de este género
+  const genreArtists = artistsData.filter(a => a.genreId === genreId);
+
+  const handleArtistClick = (artist) => {
+    navigate(`/genero/${genreId}/artista/${artist.id}`);
+  };
 
   if (!genre) {
     return <div>Género no encontrado</div>;
@@ -21,7 +30,7 @@ export function GenreDetail() {
         {/* Hero del Género con Imagen Panorámica */}
         <div style={{
           height: '50vh',
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${genre.heroImage})`,
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${genre.heroImage || genre.image})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           display: 'flex',
@@ -32,13 +41,13 @@ export function GenreDetail() {
         }}>
           <h1 style={{ 
             color: '#FFFFFF',
-            fontSize: '4rem',
+            fontSize: '5rem',
             textAlign: 'center',
-            textShadow: '0 4px 12px rgba(0,0,0,0.8)',
-            fontWeight: 'bold',
+            textShadow: '0 4px 16px rgba(0,0,0,0.9)',
+            fontWeight: 'normal',
             textTransform: 'uppercase',
-            fontFamily: '"Playfair Display", serif',
-            
+            fontFamily: '"Playfair Display", serif', 
+            letterSpacing: '4px',
           }}>
             {genre.name}
           </h1>
@@ -46,28 +55,35 @@ export function GenreDetail() {
             color: '#FFFFFF',
             fontSize: '1.5rem',
             textShadow: '0 2px 8px rgba(0,0,0,0.8)',
+            fontFamily: '"Helvetica Neue", sans-serif',
+            fontWeight: '300',
           }}>
             {genre.songsCount} Canciones • {genre.artistsCount} Artistas
           </p>
         </div>
 
-        {/* Grid de Artistas (próximo paso) */}
+        {/* Grid de Artistas */}
         <Section>
           <Container>
             <h2 style={{ 
               color: colors.text, 
-              fontSize: '1.8rem', 
+              fontSize: '2.8rem', 
               marginBottom: '2rem' 
             }}>
-              Artistas Populares
+              Artistas 
             </h2>
             
-            <p style={{ 
-              color: colors.textSecondary,
-              fontSize: '1.1rem',
-            }}>
-              Aquí irá el grid de artistas de {genre.name}...
-            </p>
+            <Grid>
+              {genreArtists.map(artist => (
+                <ArtistCard
+                  key={artist.id}
+                  name={artist.name}
+                  image={artist.image}
+                  songsCount={artist.songsCount}
+                  onClick={() => handleArtistClick(artist)}
+                />
+              ))}
+            </Grid>
           </Container>
         </Section>
       </Layout>

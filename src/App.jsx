@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Home } from './pages/Home';
 import { GenreDetail } from './pages/GenreDetail';
+import { ArtistDetail } from './pages/ArtistDetail';
 
 function App() {
   return (
@@ -8,6 +9,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/genero/:genreId" element={<GenreDetail />} />
+        <Route path="/genero/:genreId/artista/:artistId" element={<ArtistDetail />} />
       </Routes>
     </BrowserRouter>
   );
