@@ -32,7 +32,7 @@ export function Home() {
             textAlign: 'center',
             padding: '0 1rem',
           }}>
-            🎵 Catálogo Musical
+             Catálogo Musical
           </h1>
 
           <p style={{

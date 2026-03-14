@@ -16,7 +16,7 @@ export function Header() {
   return (
     <S.Container $scrolled={scrolled}>
       <S.Logo $scrolled={scrolled}>
-        🎵 Academia de Arte Musical
+         Academia de Arte Musical
       </S.Logo>
       
       <S.Nav>

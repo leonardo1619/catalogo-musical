@@ -55,7 +55,7 @@ export function ArtistDetail() {
           <Container>
             <h2 style={{ 
               color: colors.text, 
-              fontSize: '2.8rem', 
+              fontSize: '3.0rem', 
               marginBottom: '2rem' 
             }}>
               Canciones

@@ -12,6 +12,7 @@
     "name": "Grupo Frontera",
     "genreId": "regional-mexicano",
     "image": "/images/artists/grupo-frontera.jpg",
+    "heroImage": "/images/artists/grupo-frontera-hero.jpg",
     "songsCount": 32
   },
   {
@@ -19,6 +20,16 @@
     "name": "Peso Pluma",
     "genreId": "regional-mexicano",
     "image": "/images/artists/peso-pluma.jpg",
+    "heroImage": "/images/artists/peso-pluma-hero.jpg", 
+    "songsCount": 38
+  },
+  {
+    "id": "bongo",
+    "name": "Bongo",
+    "genreId": "cumbia",
+    "image": "/images/artists/nada.jpg",
+    "heroImage": "/images/artists/nada.jpg", 
     "songsCount": 38
   }
+
 ]
