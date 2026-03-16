@@ -76,6 +76,8 @@ export const Stat = styled.span`
 
 export const Card = styled.div`
   cursor: pointer;
+  width: 250px;
+  min-width: 250px;
   transition: transform ${layout.transitions.normal}, 
               box-shadow ${layout.transitions.normal};
   
@@ -83,10 +85,16 @@ export const Card = styled.div`
     transform: translateY(-8px);
     box-shadow: 0 12px 24px ${colors.shadowGreen};
     
+    ${Overlay} {
+      opacity: 1;
+    }
     
     ${Image} {
       transform: scale(1.05);
     }
     
+    ${PlayIcon} {
+      transform: scale(1.1);
+    }
   }
 `;

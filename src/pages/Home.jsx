@@ -1,15 +1,21 @@
 import { useNavigate } from 'react-router-dom';
 import { GlobalStyles } from '../styles/GlobalStyles';
-import { Layout, Container, Section, Grid } from '../components/Layout';
+import { Layout } from '../components/Layout';
+import { Carousel } from '../components/Carousel';
 import { GenreCard } from '../components/GenreCard';
 import { colors } from '../styles/colors';
 import genresData from '../data/genres.json';
+import albumsData from '../data/albums.json';
 
 export function Home() {
   const navigate = useNavigate();
 
   const handleGenreClick = (genre) => {
     navigate(`/genero/${genre.id}`);
+  };
+
+  const handleAlbumClick = (album) => {
+    navigate(`/album/${album.id}`);
   };
 
   return (
@@ -32,9 +38,8 @@ export function Home() {
             textAlign: 'center',
             padding: '0 1rem',
           }}>
-             Catálogo Musical
+            🎵 Catálogo Musical
           </h1>
-
           <p style={{
             color: colors.textSecondary,
             fontSize: '1.2rem',
@@ -44,31 +49,33 @@ export function Home() {
           </p>
         </div>
 
-        {/* Grid de Géneros */}
-        <Section>
-          <Container>
-            <h2 style={{
-              color: colors.text,
-              fontSize: '2.8rem',
-              marginBottom: '2rem'
-            }}>
-              Géneros Musicales
-            </h2>
+        {/* Carrusel de Géneros */}
+        <Carousel title="Géneros Musicales">
+          {genresData.map(genre => (
+            <GenreCard
+              key={genre.id}
+              name={genre.name}
+              image={genre.image}
+              songsCount={genre.songsCount}
+              artistsCount={genre.artistsCount}
+              onClick={() => handleGenreClick(genre)}
+            />
+          ))}
+        </Carousel>
 
-            <Grid>
-              {genresData.map(genre => (
-                <GenreCard
-                  key={genre.id}
-                  name={genre.name}
-                  image={genre.image}
-                  songsCount={genre.songsCount}
-                  artistsCount={genre.artistsCount}
-                  onClick={() => handleGenreClick(genre)}
-                />
-              ))}
-            </Grid>
-          </Container>
-        </Section>
+        {/* Carrusel de Álbumes */}
+        <Carousel title="Álbumes por Instrumento">
+          {albumsData.map(album => (
+            <GenreCard
+              key={album.id}
+              name={album.name}
+              image={album.image}
+              songsCount={album.songsCount}
+              artistsCount={null}
+              onClick={() => handleAlbumClick(album)}
+            />
+          ))}
+        </Carousel>
       </Layout>
     </>
   );
