@@ -1,12 +1,24 @@
 import { useParams } from 'react-router-dom';
 import { GlobalStyles } from '../styles/GlobalStyles';
 import { Layout, Container, Section } from '../components/Layout';
+import { SongRow } from '../components/SongRow';
 import { colors } from '../styles/colors';
 import albumsData from '../data/albums.json';
+import songsData from '../data/songs.json';
 
 export function AlbumDetail() {
   const { albumId } = useParams();
   const album = albumsData.find(a => a.id === albumId);
+  
+  // Filtrar canciones de este álbum y ordenar alfabéticamente
+  const albumSongs = songsData
+    .filter(s => s.albumId === albumId)
+    .sort((a, b) => a.title.localeCompare(b.title, 'es'));
+
+  const handleDownload = (song) => {
+    console.log('Descargar PDF:', song.pdf);
+    window.open(song.pdf, '_blank');
+  };
 
   if (!album) {
     return (
@@ -60,10 +72,10 @@ export function AlbumDetail() {
             fontFamily: '"Helvetica Neue", sans-serif',
             fontWeight: '300',
           }}>
-            {album.songsCount} Canciones • Nivel {album.level}
+            {albumSongs.length} Canciones • Nivel {album.level}
           </p>
           <p style={{ 
-            color: '#67A943',
+            color: '#FFD700',
             fontSize: '1.2rem',
             textShadow: '0 2px 8px rgba(0,0,0,0.8)',
             fontWeight: 'bold',
@@ -72,26 +84,54 @@ export function AlbumDetail() {
           </p>
         </div>
 
-        {/* Canciones del Álbum (próximo paso) */}
+        {/* Lista de Canciones */}
         <Section>
           <Container>
             <h2 style={{ 
               color: colors.text, 
-              fontSize: '1.8rem', 
+              fontSize: '2.8rem', 
               marginBottom: '2rem' 
             }}>
               Canciones del Álbum
             </h2>
             
-            <p style={{ 
-              color: colors.textSecondary,
-              fontSize: '1.1rem',
-              lineHeight: '1.6',
-            }}>
-              Aquí irá el grid de canciones de <strong>{album.name}</strong>.
-              <br />
-              Los estudiantes deben completar todas las canciones de este álbum para pasar al siguiente nivel.
-            </p>
+            {albumSongs.length === 0 ? (
+              <p style={{ color: colors.textSecondary }}>
+                No hay canciones disponibles en este álbum
+              </p>
+            ) : (
+              <div>
+                {/* Header de la tabla */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '60px 1fr 150px 80px',
+                  gap: '1rem',
+                  padding: '0.75rem 1.5rem',
+                  borderBottom: `2px solid ${colors.backgroundLight}`,
+                  color: colors.textSecondary,
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                }}>
+                  <div style={{ textAlign: 'center' }}>#</div>
+                  <div>Canción</div>
+                  <div style={{ textAlign: 'center' }}>Dificultad</div>
+                  <div style={{ textAlign: 'center' }}>Descargar</div>
+                </div>
+
+                {/* Filas de canciones */}
+                {albumSongs.map((song, index) => (
+                  <SongRow
+                    key={song.id}
+                    number={index + 1}
+                    title={song.title}
+                    difficulty={song.difficulty}
+                    onDownload={() => handleDownload(song)}
+                  />
+                ))}
+              </div>
+            )}
           </Container>
         </Section>
       </Layout>

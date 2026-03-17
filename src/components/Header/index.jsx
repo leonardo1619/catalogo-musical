@@ -23,7 +23,7 @@ export function Header() {
         <S.NavLink active>Inicio</S.NavLink>
         <S.NavLink>Generos</S.NavLink>
         <S.NavLink>Álbumes</S.NavLink>
-        <S.NavLink>Artistas</S.NavLink>
+        
       </S.Nav>
 
       <S.Actions>

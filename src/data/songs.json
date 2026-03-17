@@ -1,56 +1,56 @@
 [
   {
-    "id": 1,
+    "id": "cielito-lindo",
     "title": "Cielito Lindo",
-    "artist": "Pedro Infante",
-    "genre": "Mariachi",
+    "artistId": "natanael-cano",
     "genreId": "regional-mexicano",
-    "image": "/images/portadas/cielito-lindo.jpg",
+    "albumId": "guitarra-nivel-1",
+    "difficulty": "Principiante",
     "pdf": "/pdfs/cielito-lindo.pdf"
   },
   {
-    "id": 2,
-    "title": "Bésame Mucho",
-    "artist": "Consuelo Velázquez",
-    "genre": "Bolero",
-    "genreId": "balada-romantica",
-    "image": "/images/portadas/besame-mucho.jpg",
-    "pdf": "/pdfs/besame-mucho.pdf"
-  },
-  {
-    "id": 3,
+    "id": "la-bamba",
     "title": "La Bamba",
-    "artist": "Ritchie Valens",
-    "genre": "Rock and Roll",
-    "genreId": "rock-latino",
-    "image": "/images/portadas/la-bamba.jpg",
+    "artistId": "natanael-cano",
+    "genreId": "regional-mexicano",
+    "albumId": "guitarra-nivel-1",
+    "difficulty": "Intermedio",
     "pdf": "/pdfs/la-bamba.pdf"
   },
   {
-    "id": 4,
-    "title": "Summertime",
-    "artist": "George Gershwin",
-    "genre": "Jazz",
-    "genreId": "musica-clasica",
-    "image": "/images/portadas/summertime.jpg",
-    "pdf": "/pdfs/summertime.pdf"
+    "id": "besame-mucho",
+    "title": "Bésame Mucho",
+    "artistId": "natanael-cano",
+    "genreId": "balada-romantica",
+    "albumId": "piano-nivel-1",
+    "difficulty": "Avanzado",
+    "pdf": "/pdfs/besame-mucho.pdf"
   },
   {
-    "id": 5,
-    "title": "Fly Me to the Moon",
-    "artist": "Frank Sinatra",
-    "genre": "Jazz",
-    "genreId": "pop-rock",
-    "image": "/images/portadas/flymeto.jpg",
-    "pdf": "/pdfs/fly-me-to-the-moon.pdf"
+    "id": "el-son-de-la-negra",
+    "title": "El Son de la Negra",
+    "artistId": "natanael-cano",
+    "genreId": "regional-mexicano",
+    "albumId": "guitarra-nivel-1",
+    "difficulty": "Intermedio",
+    "pdf": "/pdfs/son-de-la-negra.pdf"
   },
   {
-    "id": 6,
-    "title": "My Way",
-    "artist": "Frank Sinatra",
-    "genre": "Vocal Jazz",
-    "genreId": "pop-rock",
-    "image": "/images/portadas/my-way.jpg",
-    "pdf": "/pdfs/my-way.pdf"
+    "id": "mexico-lindo",
+    "title": "México Lindo y Querido",
+    "artistId": "natanael-cano",
+    "genreId": "regional-mexicano",
+    "albumId": "guitarra-nivel-1",
+    "difficulty": "Principiante",
+    "pdf": "/pdfs/mexico-lindo.pdf"
+  },
+  {
+    "id": "el-rey",
+    "title": "El Rey",
+    "artistId": "natanael-cano",
+    "genreId": "regional-mexicano",
+    "albumId": "guitarra-nivel-2",
+    "difficulty": "Avanzado",
+    "pdf": "/pdfs/el-rey.pdf"
   }
 ]
