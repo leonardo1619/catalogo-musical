@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { GlobalStyles } from '../styles/GlobalStyles';
 import { Layout, Container, Section } from '../components/Layout';
 import { SongRow } from '../components/SongRow';
@@ -9,6 +9,7 @@ import songsData from '../data/songs.json';
 
 export function ArtistDetail() {
   const { genreId, artistId } = useParams();
+  const navigate = useNavigate();
   
   const artist = artistsData.find(a => a.id === artistId);
   const genre = genresData.find(g => g.id === genreId);
@@ -16,12 +17,19 @@ export function ArtistDetail() {
   // Filtrar canciones de este artista y ordenar alfabéticamente
   const artistSongs = songsData
     .filter(s => s.artistId === artistId)
-    .sort((a, b) => a.title.localeCompare(b.title, 'es')); // Orden alfabético en español
+    .sort((a, b) => a.title.localeCompare(b.title, 'es'));
 
+  // Navegar a página de PDF
+  const handleRowClick = (song) => {
+    navigate(`/pdf/${song.id}`);
+  };
+
+  // Descarga rápida
   const handleDownload = (song) => {
-    console.log('Descargar PDF:', song.pdf);
-    // Aquí después abriremos el PDF
-    window.open(song.pdf, '_blank');
+    const link = document.createElement('a');
+    link.href = song.pdf;
+    link.download = `${song.title}.pdf`;
+    link.click();
   };
 
   if (!artist) {
@@ -30,7 +38,11 @@ export function ArtistDetail() {
         <GlobalStyles />
         <Layout>
           <Container>
-            <div style={{ padding: '4rem 0', textAlign: 'center', color: colors.text }}>
+            <div style={{ 
+              padding: '4rem 0', 
+              textAlign: 'center', 
+              color: colors.text 
+            }}>
               <h1>Artista no encontrado</h1>
             </div>
           </Container>
@@ -81,7 +93,7 @@ export function ArtistDetail() {
           <Container>
             <h2 style={{ 
               color: colors.text, 
-              fontSize: '2.8rem', 
+              fontSize: '1.8rem', 
               marginBottom: '2rem' 
             }}>
               Canciones
@@ -119,6 +131,7 @@ export function ArtistDetail() {
                     number={index + 1}
                     title={song.title}
                     difficulty={song.difficulty}
+                    onRowClick={() => handleRowClick(song)}
                     onDownload={() => handleDownload(song)}
                   />
                 ))}
