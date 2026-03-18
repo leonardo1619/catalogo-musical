@@ -11,27 +11,17 @@ export const Container = styled.header`
   align-items: center;
   justify-content: space-between;
   padding: 0 4%;
-  
-  /* Estado normal: transparente */
   background-color: ${props => props.$scrolled 
     ? 'rgba(255, 255, 255, 0.85)' 
-    : 'transparent'
-  };
-  
-  /* Glassmorphism cuando scrolled */
+    : 'transparent'};
   ${props => props.$scrolled && `
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-  `}
-  
-  transition: all 0.5s ease;
-  z-index: 1000;
-  
-  /* Ajustar altura al hacer scroll */
-  ${props => props.$scrolled && `
     height: 70px;
   `}
+  transition: all 0.5s ease;
+  z-index: 1000;
 `;
 
 export const Logo = styled.h1`
@@ -41,9 +31,10 @@ export const Logo = styled.h1`
   cursor: pointer;
   transition: all 0.5s ease;
   white-space: nowrap;
-
-  &:hover {
-    transform: scale(1.05);
+  flex-shrink: 0;
+  
+  &:hover { 
+    transform: scale(1.05); 
   }
 `;
 
@@ -51,48 +42,43 @@ export const Nav = styled.nav`
   display: flex;
   gap: 2.5rem;
   flex: 1;
-  justify-content: center;
-  margin-left: 3rem;
-
-  @media (max-width: 768px) {
-    display: none;
+  justify-content: flex-start;
+  margin: 0 4rem;
+  
+  @media (max-width: 768px) { 
+    display: none; 
   }
 `;
 
 export const NavLink = styled.a`
-  color: #050708;
-  font-size: 0.95rem;
+  color: ${props => props.$active ? colors.primary : '#050708'};
+  font-size: 1rem;
   font-weight: 500;
   letter-spacing: 0.5px;
   cursor: pointer;
   transition: color 0.3s ease;
   position: relative;
-  padding: 0 1.25rem;
-
-  /* Subrayado */
+  padding: 0.5rem 1rem;
+  white-space: nowrap;
+  
   &::after {
     content: '';
     position: absolute;
-    bottom: -5px;
+    bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: ${props => props.active ? '100%' : '0'};
+    width: ${props => props.$active ? '100%' : '0'};
     height: 2px;
     background-color: ${colors.primary};
     transition: width 0.3s ease;
   }
-
-  /* Item activo */
-  ${props => props.active && `
-    color: ${colors.primary};
-  `}
-
-  &:hover {
-    color: ${colors.primary};
+  
+  &:hover { 
+    color: ${colors.primary}; 
     
-    &::after {
-      width: 100%;
-    }
+    &::after { 
+      width: 100%; 
+    } 
   }
 `;
 
@@ -100,28 +86,24 @@ export const Actions = styled.div`
   display: flex;
   align-items: center;
   gap: 1.5rem;
+  flex-shrink: 0;
 `;
 
-export const SearchIcon = styled.div`
-  font-size: 1.3rem;
+export const IconButton = styled.button`
+  background: none;
+  border: none;
   color: #050708;
   cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
   transition: all 0.3s ease;
-
-  &:hover {
-    transform: scale(1.15);
+  
+  &:hover { 
+    background-color: ${colors.hover};
     color: ${colors.primary};
-  }
-`;
-
-export const UserIcon = styled.div`
-  font-size: 1.5rem;
-  color: #050708;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: scale(1.15);
-    color: ${colors.primary};
+    transform: scale(1.1); 
   }
 `;
