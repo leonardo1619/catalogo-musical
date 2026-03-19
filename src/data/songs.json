@@ -52,5 +52,96 @@
     "albumId": "guitarra-nivel-2",
     "difficulty": "Avanzado",
     "pdf": "/pdfs/el-rey.pdf"
+  },
+  {
+    "id": "have-you-ever-seen-the-rain",
+    "title": "Have you ever seen the Rain",
+    "artistId": "coldplay",
+    "genreId": "rock-latino",
+    "albumId": "bateria-nivel-1",
+    "difficulty": "Principiante",
+    "pdf": "/pdfs/have-you-ever-seen-the-rain.pdf"
+  },
+  {
+    "id": "tu-carcel",
+    "title": "Tu Cárcel",
+    "artistId": "coldplay",
+    "genreId": "regional-mexicano",
+    "albumId": "bateria-nivel-1",
+    "difficulty": "Principiante",
+    "pdf": "/pdfs/tu-carcel.pdf"
+  },
+  {
+    "id": "yellow",
+    "title": "Yellow",
+    "artistId": "coldplay",
+    "genreId": "pop-rock",
+    "albumId": "bateria-nivel-1",
+    "difficulty": "Principiante",
+    "pdf": "/pdfs/yellow.pdf"
+  },
+  {
+    "id": "blitzkrieg-bop",
+    "title": "Blitzkrieg Bop",
+    "artistId": "coldplay",
+    "genreId": "rock-latino",
+    "albumId": "bateria-nivel-1",
+    "difficulty": "Intermedio",
+    "pdf": "/pdfs/blitzkrieg-bop.pdf"
+  },
+  {
+    "id": "antes-que-al-mio",
+    "title": "Antes que al mío",
+    "artistId": "coldplay",
+    "genreId": "regional-mexicano",
+    "albumId": "bateria-nivel-1",
+    "difficulty": "Intermedio",
+    "pdf": "/pdfs/antes-que-al-mio.pdf"
+  },
+  {
+    "id": "amtrak",
+    "title": "Amtrak",
+    "artistId": "coldplay",
+    "genreId": "pop-rock",
+    "albumId": "bateria-nivel-1",
+    "difficulty": "Avanzado",
+    "pdf": "/pdfs/amtrak.pdf"
+  },
+  {
+    "id": "chamber-of-reflection",
+    "title": "Chamber of Reflection",
+    "artistId": "coldplay",
+    "genreId": "pop-rock",
+    "albumId": "bateria-nivel-1",
+    "difficulty": "Avanzado",
+    "pdf": "/pdfs/chamber-of-reflection.pdf"
+  },
+  {
+    "id": "clint-eastwood",
+    "title": "Clint Eastwood",
+    "artistId": "coldplay",
+    "genreId": "rock-latino",
+    "albumId": "bateria-nivel-1",
+    "difficulty": "Intermedio",
+    "pdf": "/pdfs/clint-eastwood.pdf"
+  },
+  {
+    "id": "me-hace-falta",
+    "title": "Me hace Falta",
+    "artistId": "coldplay",
+    "genreId": "regional-mexicano",
+    "albumId": "bateria-nivel-1",
+    "difficulty": "Principiante",
+    "pdf": "/pdfs/me-hace-falta.pdf"
+  },
+  {
+    "id": "every-breath-you-take",
+    "title": "Every Breath You Take",
+    "artistId": "coldplay",
+    "genreId": "pop-rock",
+    "albumId": "bateria-nivel-1",
+    "difficulty": "Intermedio",
+    "pdf": "/pdfs/every-breath-you-take.pdf"
   }
+
 ]

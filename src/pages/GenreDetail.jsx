@@ -102,10 +102,10 @@ const artistsWithRealCounts = genreArtists.map(artist => {
           <Container>
             <h2 style={{ 
               color: colors.text, 
-              fontSize: '1.8rem', 
+              fontSize: '2.8rem', 
               marginBottom: '2rem' 
             }}>
-              Artistas Populares
+              Artistas 
             </h2>
             
             {artistsWithRealCounts.length === 0 ? (

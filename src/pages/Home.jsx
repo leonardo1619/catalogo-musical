@@ -59,7 +59,7 @@ export function Home() {
         }}>
           {/* Logo */}
           <img 
-            src="/images/logo.png" 
+            src="/images/LOGOADA.png" 
             alt="Academia de Arte Musical"
             style={{
               width: '180px',

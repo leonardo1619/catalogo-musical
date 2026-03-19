@@ -2,12 +2,14 @@ import React from 'react';
 import * as S from './styles';
 import { FiDownload } from 'react-icons/fi';
 
-export function SongRow({ number, title, difficulty, onRowClick, onDownload }) {
+export function SongRow({ number, title, genre, difficulty, onRowClick, onDownload }) {
   return (
     <S.Row onClick={onRowClick}>
       <S.Number>{number}</S.Number>
       
       <S.Title>{title}</S.Title>
+      
+      <S.Genre>{genre}</S.Genre>
       
       <S.Difficulty $level={difficulty}>
         {difficulty}

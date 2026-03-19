@@ -105,36 +105,41 @@ export function ArtistDetail() {
               </p>
             ) : (
               <div>
-                {/* Header de la tabla */}
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: '60px 1fr 150px 80px',
-                  gap: '1rem',
-                  padding: '0.75rem 1.5rem',
-                  borderBottom: `2px solid ${colors.backgroundLight}`,
-                  color: colors.textSecondary,
-                  fontSize: '0.875rem',
-                  fontWeight: '600',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.5px',
-                }}>
-                  <div style={{ textAlign: 'center' }}>#</div>
-                  <div>Canción</div>
-                  <div style={{ textAlign: 'center' }}>Dificultad</div>
-                  <div style={{ textAlign: 'center' }}>Descargar</div>
-                </div>
+{/* Header de la tabla */}
+<div style={{
+  display: 'grid',
+  gridTemplateColumns: '60px 1fr 150px 150px 80px',  // ← CAMBIÓ
+  gap: '1rem',
+  padding: '0.75rem 1.5rem',
+  borderBottom: `2px solid ${colors.backgroundLight}`,
+  color: colors.textSecondary,
+  fontSize: '0.875rem',
+  fontWeight: '600',
+  textTransform: 'uppercase',
+  letterSpacing: '0.5px',
+}}>
+  <div style={{ textAlign: 'center' }}>#</div>
+  <div>Canción</div>
+  <div style={{ textAlign: 'center' }}>Género</div>
+  <div style={{ textAlign: 'center' }}>Dificultad</div>
+  <div style={{ textAlign: 'center' }}>Descargar</div>
+</div>
 
-                {/* Filas de canciones */}
-                {artistSongs.map((song, index) => (
-                  <SongRow
-                    key={song.id}
-                    number={index + 1}
-                    title={song.title}
-                    difficulty={song.difficulty}
-                    onRowClick={() => handleRowClick(song)}
-                    onDownload={() => handleDownload(song)}
-                  />
-                ))}
+{/* Filas de canciones */}
+{artistSongs.map((song, index) => {
+  const genre = genresData.find(g => g.id === song.genreId);
+  return (
+    <SongRow
+      key={song.id}
+      number={index + 1}
+      title={song.title}
+      genre={genre?.name || 'Sin género'}
+      difficulty={song.difficulty}
+      onRowClick={() => handleRowClick(song)}
+      onDownload={() => handleDownload(song)}
+    />
+  );
+})}
               </div>
             )}
           </Container>
