@@ -1,16 +1,73 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 import { GlobalStyles } from '../styles/GlobalStyles';
 import { Layout } from '../components/Layout';
 import { Carousel } from '../components/Carousel';
 import { GenreCard } from '../components/GenreCard';
 import { colors } from '../styles/colors';
-import genresData from '../data/genres.json';
-import albumsData from '../data/albums.json';
-import songsData from '../data/songs.json';
-import artistsData from '../data/artists.json';
 
 export function Home() {
   const navigate = useNavigate();
+  const [genres, setGenres] = useState([]);
+  const [albums, setAlbums] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        // ✅ OPTIMIZACIÓN: Solo 4 queries en paralelo (antes eran 18+)
+        const [genresRes, albumsRes, songsRes, artistsRes] = await Promise.all([
+          supabase.from('genres').select('id, slug, name, image, hero_image').order('name'),
+          supabase.from('albums').select('id, slug, name, instrument, level, image').order('instrument, level'),
+          supabase.from('songs').select('genre_id, album_id'),
+          supabase.from('artists').select('genre_id')
+        ]);
+
+        if (genresRes.error) throw genresRes.error;
+        if (albumsRes.error) throw albumsRes.error;
+        if (songsRes.error) throw songsRes.error;
+        if (artistsRes.error) throw artistsRes.error;
+
+        // ✅ Calcular conteos en JavaScript (instantáneo)
+        const genresWithCounts = (genresRes.data || []).map(genre => {
+          const songsCount = (songsRes.data || []).filter(s => s.genre_id === genre.id).length;
+          const artistsCount = (artistsRes.data || []).filter(a => a.genre_id === genre.id).length;
+
+          return {
+            id: genre.slug,
+            name: genre.name,
+            image: genre.image,
+            heroImage: genre.hero_image,
+            songsCount,
+            artistsCount
+          };
+        });
+
+        const albumsWithCounts = (albumsRes.data || []).map(album => {
+          const songsCount = (songsRes.data || []).filter(s => s.album_id === album.id).length;
+
+          return {
+            id: album.slug,
+            name: album.name,
+            image: album.image,
+            instrument: album.instrument,
+            level: album.level,
+            songsCount
+          };
+        });
+
+        setGenres(genresWithCounts);
+        setAlbums(albumsWithCounts);
+      } catch (error) {
+        console.error('Error cargando datos:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
 
   const handleGenreClick = (genre) => {
     navigate(`/genero/${genre.id}`);
@@ -20,27 +77,25 @@ export function Home() {
     navigate(`/album/${album.id}`);
   };
 
-  // Calcular conteos reales de géneros
-  const genresWithRealCounts = genresData.map(genre => {
-    const genreSongs = songsData.filter(s => s.genreId === genre.id);
-    const genreArtists = artistsData.filter(a => a.genreId === genre.id);
-    
-    return {
-      ...genre,
-      songsCount: genreSongs.length,
-      artistsCount: genreArtists.length
-    };
-  });
-
-  // Calcular conteos reales de álbumes
-  const albumsWithRealCounts = albumsData.map(album => {
-    const albumSongs = songsData.filter(s => s.albumId === album.id);
-    
-    return {
-      ...album,
-      songsCount: albumSongs.length
-    };
-  });
+  if (loading) {
+    return (
+      <>
+        <GlobalStyles />
+        <Layout>
+          <div style={{
+            height: '80vh',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.5rem',
+            color: colors.textSecondary
+          }}>
+            Cargando catálogo...
+          </div>
+        </Layout>
+      </>
+    );
+  }
 
   return (
     <>
@@ -94,7 +149,7 @@ export function Home() {
         {/* Carrusel de Géneros */}
         <div id="generos-section">
           <Carousel title="Géneros Musicales">
-            {genresWithRealCounts.map(genre => (
+            {genres.map(genre => (
               <GenreCard
                 key={genre.id}
                 name={genre.name}
@@ -110,7 +165,7 @@ export function Home() {
         {/* Carrusel de Álbumes */}
         <div id="albumes-section">
           <Carousel title="Álbumes por Instrumento">
-            {albumsWithRealCounts.map(album => (
+            {albums.map(album => (
               <GenreCard
                 key={album.id}
                 name={album.name}

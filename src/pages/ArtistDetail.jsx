@@ -1,36 +1,124 @@
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 import { GlobalStyles } from '../styles/GlobalStyles';
 import { Layout, Container, Section } from '../components/Layout';
 import { SongRow } from '../components/SongRow';
 import { colors } from '../styles/colors';
-import artistsData from '../data/artists.json';
-import genresData from '../data/genres.json';
-import songsData from '../data/songs.json';
 
 export function ArtistDetail() {
   const { genreId, artistId } = useParams();
   const navigate = useNavigate();
   
-  const artist = artistsData.find(a => a.id === artistId);
-  const genre = genresData.find(g => g.id === genreId);
-  
-  // Filtrar canciones de este artista y ordenar alfabéticamente
-  const artistSongs = songsData
-    .filter(s => s.artistId === artistId)
-    .sort((a, b) => a.title.localeCompare(b.title, 'es'));
+  const [artist, setArtist] = useState(null);
+  const [genre, setGenre] = useState(null);
+  const [songs, setSongs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Navegar a página de PDF
+  useEffect(() => {
+    async function fetchArtistData() {
+      try {
+        // Cargar artista
+        const { data: artistData, error: artistError } = await supabase
+          .from('artists')
+          .select('*')
+          .eq('slug', artistId)
+          .single();
+
+        if (artistError) throw artistError;
+
+        if (!artistData) {
+          setLoading(false);
+          return;
+        }
+
+        // Cargar género del artista
+        const { data: genreData, error: genreError } = await supabase
+          .from('genres')
+          .select('*')
+          .eq('id', artistData.genre_id)
+          .single();
+
+        if (genreError) throw genreError;
+
+        // Cargar canciones del artista con información de género
+        const { data: songsData, error: songsError } = await supabase
+          .from('songs')
+          .select(`
+            *,
+            genre:genres(name)
+          `)
+          .eq('artist_id', artistData.id)
+          .order('title');
+
+        if (songsError) throw songsError;
+
+        setArtist({
+          id: artistData.slug,
+          name: artistData.name,
+          image: artistData.image,
+          heroImage: artistData.hero_image
+        });
+
+        setGenre({
+          id: genreData.slug,
+          name: genreData.name
+        });
+
+        setSongs((songsData || []).map(song => ({
+          id: song.slug,
+          title: song.title,
+          difficulty: song.difficulty,
+          pdf: song.pdf_url,
+          genreName: song.genre?.name || 'Sin género'
+        })));
+
+      } catch (error) {
+        console.error('Error cargando artista:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchArtistData();
+  }, [artistId]);
+
   const handleRowClick = (song) => {
     navigate(`/pdf/${song.id}`);
   };
 
-  // Descarga rápida
   const handleDownload = (song) => {
+    if (!song.pdf) {
+      alert('PDF no disponible');
+      return;
+    }
     const link = document.createElement('a');
     link.href = song.pdf;
     link.download = `${song.title}.pdf`;
     link.click();
   };
+
+  if (loading) {
+    return (
+      <>
+        <GlobalStyles />
+        <Layout>
+          <Container>
+            <div style={{
+              height: '80vh',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.5rem',
+              color: colors.textSecondary
+            }}>
+              Cargando artista...
+            </div>
+          </Container>
+        </Layout>
+      </>
+    );
+  }
 
   if (!artist) {
     return (
@@ -84,7 +172,7 @@ export function ArtistDetail() {
             fontFamily: '"Helvetica Neue", sans-serif',
             fontWeight: '300',
           }}>
-            {artistSongs.length} Canciones • {genre?.name}
+            {songs.length} Canciones • {genre?.name}
           </p>
         </div>
 
@@ -99,47 +187,44 @@ export function ArtistDetail() {
               Canciones
             </h2>
             
-            {artistSongs.length === 0 ? (
+            {songs.length === 0 ? (
               <p style={{ color: colors.textSecondary }}>
                 No hay canciones disponibles para {artist.name}
               </p>
             ) : (
               <div>
-{/* Header de la tabla */}
-<div style={{
-  display: 'grid',
-  gridTemplateColumns: '60px 1fr 150px 150px 80px',  // ← CAMBIÓ
-  gap: '1rem',
-  padding: '0.75rem 1.5rem',
-  borderBottom: `2px solid ${colors.backgroundLight}`,
-  color: colors.textSecondary,
-  fontSize: '0.875rem',
-  fontWeight: '600',
-  textTransform: 'uppercase',
-  letterSpacing: '0.5px',
-}}>
-  <div style={{ textAlign: 'center' }}>#</div>
-  <div>Canción</div>
-  <div style={{ textAlign: 'center' }}>Género</div>
-  <div style={{ textAlign: 'center' }}>Dificultad</div>
-  <div style={{ textAlign: 'center' }}>Descargar</div>
-</div>
+                {/* Header de la tabla */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '60px 1fr 150px 150px 80px',
+                  gap: '1rem',
+                  padding: '0.75rem 1.5rem',
+                  borderBottom: `2px solid ${colors.backgroundLight}`,
+                  color: colors.textSecondary,
+                  fontSize: '0.875rem',
+                  fontWeight: '600',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.5px',
+                }}>
+                  <div style={{ textAlign: 'center' }}>#</div>
+                  <div>Canción</div>
+                  <div style={{ textAlign: 'center' }}>Género</div>
+                  <div style={{ textAlign: 'center' }}>Dificultad</div>
+                  <div style={{ textAlign: 'center' }}>Descargar</div>
+                </div>
 
-{/* Filas de canciones */}
-{artistSongs.map((song, index) => {
-  const genre = genresData.find(g => g.id === song.genreId);
-  return (
-    <SongRow
-      key={song.id}
-      number={index + 1}
-      title={song.title}
-      genre={genre?.name || 'Sin género'}
-      difficulty={song.difficulty}
-      onRowClick={() => handleRowClick(song)}
-      onDownload={() => handleDownload(song)}
-    />
-  );
-})}
+                {/* Filas de canciones */}
+                {songs.map((song, index) => (
+                  <SongRow
+                    key={song.id}
+                    number={index + 1}
+                    title={song.title}
+                    genre={song.genreName}
+                    difficulty={song.difficulty}
+                    onRowClick={() => handleRowClick(song)}
+                    onDownload={() => handleDownload(song)}
+                  />
+                ))}
               </div>
             )}
           </Container>

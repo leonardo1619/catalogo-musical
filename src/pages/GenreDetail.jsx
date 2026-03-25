@@ -1,43 +1,116 @@
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 import { GlobalStyles } from '../styles/GlobalStyles';
 import { Layout, Container, Section, Grid } from '../components/Layout';
 import { ArtistCard } from '../components/ArtistCard';
 import { colors } from '../styles/colors';
-import genresData from '../data/genres.json';
-import artistsData from '../data/artists.json';
-import songsData from '../data/songs.json';
 
 export function GenreDetail() {
   const navigate = useNavigate();
   const { genreId } = useParams();
   
-  const genre = genresData.find(g => g.id === genreId);
-  
-  // Filtrar artistas de este género
-  const genreArtists = artistsData.filter(a => a.genreId === genreId);
+  const [genre, setGenre] = useState(null);
+  const [artists, setArtists] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [totalSongs, setTotalSongs] = useState(0);
+  const [totalArtists, setTotalArtists] = useState(0);
 
-  // ✅ CALCULAR CONTEOS REALES
-  // Conteo total de canciones del género
-  const totalSongs = songsData.filter(s => s.genreId === genreId).length;
-  
-  // Conteo de artistas del género
-  const totalArtists = genreArtists.length;
+  useEffect(() => {
+    async function fetchGenreData() {
+      try {
+        // Cargar género
+        const { data: genreData, error: genreError } = await supabase
+          .from('genres')
+          .select('*')
+          .eq('slug', genreId)
+          .single();
 
-  // Artistas con conteo real de canciones
-const artistsWithRealCounts = genreArtists.map(artist => {
-  const artistSongs = songsData.filter(s => 
-    s.artistId === artist.id && s.genreId === genreId  // ← FILTRAR POR GÉNERO TAMBIÉN
-  );
-  
-  return {
-    ...artist,
-    songsCount: artistSongs.length
-  };
-});
+        if (genreError) throw genreError;
+
+        if (!genreData) {
+          setLoading(false);
+          return;
+        }
+
+        // Cargar artistas del género
+        const { data: artistsData, error: artistsError } = await supabase
+          .from('artists')
+          .select('*')
+          .eq('genre_id', genreData.id)
+          .order('name');
+
+        if (artistsError) throw artistsError;
+
+        // Contar canciones totales del género
+        const { count: songsCount } = await supabase
+          .from('songs')
+          .select('*', { count: 'exact', head: true })
+          .eq('genre_id', genreData.id);
+
+        // Calcular conteos por artista
+        const artistsWithCounts = await Promise.all(
+          (artistsData || []).map(async (artist) => {
+            const { count: artistSongsCount } = await supabase
+              .from('songs')
+              .select('*', { count: 'exact', head: true })
+              .eq('artist_id', artist.id)
+              .eq('genre_id', genreData.id);
+
+            return {
+              id: artist.slug,
+              name: artist.name,
+              image: artist.image,
+              heroImage: artist.hero_image,
+              songsCount: artistSongsCount || 0
+            };
+          })
+        );
+
+        setGenre({
+          id: genreData.slug,
+          name: genreData.name,
+          image: genreData.image,
+          heroImage: genreData.hero_image
+        });
+        setArtists(artistsWithCounts);
+        setTotalSongs(songsCount || 0);
+        setTotalArtists(artistsData?.length || 0);
+      } catch (error) {
+        console.error('Error cargando género:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchGenreData();
+  }, [genreId]);
 
   const handleArtistClick = (artist) => {
     navigate(`/genero/${genreId}/artista/${artist.id}`);
   };
+
+  if (loading) {
+    return (
+      <>
+        <GlobalStyles />
+        <Layout>
+          <Container>
+            <div style={{
+              height: '80vh',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.5rem',
+              color: colors.textSecondary
+            }}>
+              Cargando género...
+            </div>
+          </Container>
+        </Layout>
+      </>
+    );
+  }
 
   if (!genre) {
     return (
@@ -62,7 +135,7 @@ const artistsWithRealCounts = genreArtists.map(artist => {
     <>
       <GlobalStyles />
       <Layout>
-        {/* Hero del Género con Conteo Real */}
+        {/* Hero del Género */}
         <div style={{
           height: '50vh',
           backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${genre.heroImage || genre.image})`,
@@ -97,7 +170,7 @@ const artistsWithRealCounts = genreArtists.map(artist => {
           </p>
         </div>
 
-        {/* Grid de Artistas con Conteo Real */}
+        {/* Grid de Artistas */}
         <Section>
           <Container>
             <h2 style={{ 
@@ -108,13 +181,13 @@ const artistsWithRealCounts = genreArtists.map(artist => {
               Artistas 
             </h2>
             
-            {artistsWithRealCounts.length === 0 ? (
+            {artists.length === 0 ? (
               <p style={{ color: colors.textSecondary }}>
                 No hay artistas disponibles en este género
               </p>
             ) : (
               <Grid>
-                {artistsWithRealCounts.map(artist => (
+                {artists.map(artist => (
                   <ArtistCard
                     key={artist.id}
                     name={artist.name}

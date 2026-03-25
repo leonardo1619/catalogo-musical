@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Fuse from 'fuse.js';
 import { FiX, FiMusic, FiUser, FiDisc, FiFolder } from 'react-icons/fi';
+import { supabase } from '../../lib/supabase';
 import * as S from './styles';
 
-import songsData from '../../data/songs.json';
-import artistsData from '../../data/artists.json';
-import genresData from '../../data/genres.json';
-import albumsData from '../../data/albums.json';
+  // Configurar Fuse.js
+  const fuseOptions = {
+    threshold: 0.3,
+    keys: ['name', 'title']
+  };
+
 
 export function SearchModal({ isOpen, onClose }) {
   const [query, setQuery] = useState('');
@@ -17,25 +20,91 @@ export function SearchModal({ isOpen, onClose }) {
     genres: [],
     albums: []
   });
+  const [allData, setAllData] = useState({
+    songs: [],
+    artists: [],
+    genres: [],
+    albums: []
+  });
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Configurar Fuse.js para cada tipo de búsqueda
-  const fuseOptions = {
-    threshold: 0.3,
-    keys: ['name', 'title']
-  };
+  // Cargar todos los datos al montar el componente
+  useEffect(() => {
+    async function fetchAllData() {
+      try {
+        // Cargar datos sin JOINs complejos
+        const [songsRes, artistsRes, genresRes, albumsRes] = await Promise.all([
+          supabase.from('songs').select('*'),
+          supabase.from('artists').select('*'),
+          supabase.from('genres').select('*'),
+          supabase.from('albums').select('*')
+        ]);
 
-  const songsFuse = new Fuse(songsData, { ...fuseOptions, keys: ['title'] });
-  const artistsFuse = new Fuse(artistsData, fuseOptions);
-  const genresFuse = new Fuse(genresData, fuseOptions);
-  const albumsFuse = new Fuse(albumsData, fuseOptions);
+        // Crear mapas para relacionar datos
+        const artistsMap = {};
+        const genresMap = {};
+        
+        (artistsRes.data || []).forEach(a => {
+          artistsMap[a.id] = a.name;
+        });
+        
+        (genresRes.data || []).forEach(g => {
+          genresMap[g.id] = g.name;
+        });
+
+        setAllData({
+          songs: (songsRes.data || []).map(s => ({
+            id: s.slug,
+            title: s.title,
+            artistName: artistsMap[s.artist_id] || 'Sin artista',
+            artistId: s.artist_id,
+            genreId: s.genre_id,
+            genreName: genresMap[s.genre_id] || 'Sin género',
+            difficulty: s.difficulty
+          })),
+          artists: (artistsRes.data || []).map(a => ({
+            id: a.slug,
+            name: a.name,
+            genreId: a.genre_id,
+            genreSlug: a.genre_id
+          })),
+          genres: (genresRes.data || []).map(g => ({
+            id: g.slug,
+            name: g.name,
+            _uuid: g.id
+          })),
+          albums: (albumsRes.data || []).map(a => ({
+            id: a.slug,
+            name: a.name,
+            level: a.level,
+            _uuid: a.id
+          }))
+        });
+      } catch (error) {
+        console.error('Error cargando datos para búsqueda:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (isOpen) {
+      fetchAllData();
+    }
+  }, [isOpen]);
+
 
   // Buscar en tiempo real
   useEffect(() => {
-    if (query.trim() === '') {
+    if (query.trim() === '' || loading) {
       setResults({ songs: [], artists: [], genres: [], albums: [] });
       return;
     }
+
+    const songsFuse = new Fuse(allData.songs, { ...fuseOptions, keys: ['title', 'artistName'] });
+    const artistsFuse = new Fuse(allData.artists, fuseOptions);
+    const genresFuse = new Fuse(allData.genres, fuseOptions);
+    const albumsFuse = new Fuse(allData.albums, fuseOptions);
 
     const songResults = songsFuse.search(query).slice(0, 5);
     const artistResults = artistsFuse.search(query).slice(0, 5);
@@ -48,7 +117,7 @@ export function SearchModal({ isOpen, onClose }) {
       genres: genreResults.map(r => r.item),
       albums: albumResults.map(r => r.item)
     });
-  }, [query]);
+  }, [query, allData, loading]);
 
   // Navegar a resultado
   const handleSongClick = (song) => {
@@ -56,8 +125,21 @@ export function SearchModal({ isOpen, onClose }) {
     onClose();
   };
 
-  const handleArtistClick = (artist) => {
-    navigate(`/genero/${artist.genreId}/artista/${artist.id}`);
+  const handleArtistClick = async (artist) => {
+    try {
+      // Obtener el slug del género
+      const { data: genreData } = await supabase
+        .from('genres')
+        .select('slug')
+        .eq('id', artist.genreSlug)
+        .single();
+
+      if (genreData) {
+        navigate(`/genero/${genreData.slug}/artista/${artist.id}`);
+      }
+    } catch (error) {
+      console.error('Error navegando a artista:', error);
+    }
     onClose();
   };
 
@@ -69,6 +151,34 @@ export function SearchModal({ isOpen, onClose }) {
   const handleAlbumClick = (album) => {
     navigate(`/album/${album.id}`);
     onClose();
+  };
+
+  // Contar canciones por entidad
+  const getSongsCount = (entityId, entityType) => {
+    if (entityType === 'artist') {
+      // Buscar por UUID del artista
+      const artist = allData.artists.find(a => a.id === entityId);
+      if (!artist) return 0;
+      return allData.songs.filter(s => s.artistId === artist.genreSlug).length;
+    }
+    if (entityType === 'genre') {
+      // Buscar UUID del género
+      const genre = allData.genres.find(g => g.id === entityId);
+      if (!genre) return 0;
+      return allData.songs.filter(s => s.genreId === genre._uuid).length;
+    }
+    if (entityType === 'album') {
+      const album = allData.albums.find(a => a.id === entityId);
+      if (!album) return 0;
+      return allData.songs.filter(s => s.albumId === album._uuid).length;
+    }
+    return 0;
+  };
+
+  const getArtistsCount = (genreId) => {
+    const genre = allData.genres.find(g => g.id === genreId);
+    if (!genre) return 0;
+    return allData.artists.filter(a => a.genreId === genre._uuid).length;
   };
 
   // Cerrar con ESC
@@ -111,11 +221,16 @@ export function SearchModal({ isOpen, onClose }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           autoFocus
+          disabled={loading}
         />
 
         {/* Resultados */}
         <S.Results>
-          {query.trim() === '' ? (
+          {loading ? (
+            <S.EmptyState>
+              Cargando datos...
+            </S.EmptyState>
+          ) : query.trim() === '' ? (
             <S.EmptyState>
               Escribe para buscar en el catálogo...
             </S.EmptyState>
@@ -132,22 +247,19 @@ export function SearchModal({ isOpen, onClose }) {
                     <FiMusic size={18} />
                     CANCIONES ({results.songs.length})
                   </S.SectionTitle>
-                  {results.songs.map(song => {
-                    const artist = artistsData.find(a => a.id === song.artistId);
-                    return (
-                      <S.ResultItem key={song.id} onClick={() => handleSongClick(song)}>
-                        <S.ResultIcon>
-                          <FiMusic size={20} />
-                        </S.ResultIcon>
-                        <S.ResultInfo>
-                          <S.ResultTitle>{song.title}</S.ResultTitle>
-                          <S.ResultSubtitle>
-                            {artist?.name} • {song.difficulty}
-                          </S.ResultSubtitle>
-                        </S.ResultInfo>
-                      </S.ResultItem>
-                    );
-                  })}
+                  {results.songs.map(song => (
+                    <S.ResultItem key={song.id} onClick={() => handleSongClick(song)}>
+                      <S.ResultIcon>
+                        <FiMusic size={20} />
+                      </S.ResultIcon>
+                      <S.ResultInfo>
+                        <S.ResultTitle>{song.title}</S.ResultTitle>
+                        <S.ResultSubtitle>
+                          {song.artistName} • {song.difficulty}
+                        </S.ResultSubtitle>
+                      </S.ResultInfo>
+                    </S.ResultItem>
+                  ))}
                 </S.Section>
               )}
 
@@ -159,7 +271,7 @@ export function SearchModal({ isOpen, onClose }) {
                     ARTISTAS ({results.artists.length})
                   </S.SectionTitle>
                   {results.artists.map(artist => {
-                    const artistSongs = songsData.filter(s => s.artistId === artist.id);
+                    const songsCount = getSongsCount(artist.id, 'artist');
                     return (
                       <S.ResultItem key={artist.id} onClick={() => handleArtistClick(artist)}>
                         <S.ResultIcon>
@@ -168,7 +280,7 @@ export function SearchModal({ isOpen, onClose }) {
                         <S.ResultInfo>
                           <S.ResultTitle>{artist.name}</S.ResultTitle>
                           <S.ResultSubtitle>
-                            {artistSongs.length} Canciones
+                            {songsCount} Canciones
                           </S.ResultSubtitle>
                         </S.ResultInfo>
                       </S.ResultItem>
@@ -185,8 +297,8 @@ export function SearchModal({ isOpen, onClose }) {
                     GÉNEROS ({results.genres.length})
                   </S.SectionTitle>
                   {results.genres.map(genre => {
-                    const genreSongs = songsData.filter(s => s.genreId === genre.id);
-                    const genreArtists = artistsData.filter(a => a.genreId === genre.id);
+                    const songsCount = getSongsCount(genre.id, 'genre');
+                    const artistsCount = getArtistsCount(genre.id);
                     return (
                       <S.ResultItem key={genre.id} onClick={() => handleGenreClick(genre)}>
                         <S.ResultIcon>
@@ -195,7 +307,7 @@ export function SearchModal({ isOpen, onClose }) {
                         <S.ResultInfo>
                           <S.ResultTitle>{genre.name}</S.ResultTitle>
                           <S.ResultSubtitle>
-                            {genreSongs.length} Canciones • {genreArtists.length} Artistas
+                            {songsCount} Canciones • {artistsCount} Artistas
                           </S.ResultSubtitle>
                         </S.ResultInfo>
                       </S.ResultItem>
@@ -212,7 +324,7 @@ export function SearchModal({ isOpen, onClose }) {
                     ÁLBUMES ({results.albums.length})
                   </S.SectionTitle>
                   {results.albums.map(album => {
-                    const albumSongs = songsData.filter(s => s.albumId === album.id);
+                    const songsCount = getSongsCount(album.id, 'album');
                     return (
                       <S.ResultItem key={album.id} onClick={() => handleAlbumClick(album)}>
                         <S.ResultIcon>
@@ -221,7 +333,7 @@ export function SearchModal({ isOpen, onClose }) {
                         <S.ResultInfo>
                           <S.ResultTitle>{album.name}</S.ResultTitle>
                           <S.ResultSubtitle>
-                            {albumSongs.length} Canciones • Nivel {album.level}
+                            {songsCount} Canciones • Nivel {album.level}
                           </S.ResultSubtitle>
                         </S.ResultInfo>
                       </S.ResultItem>

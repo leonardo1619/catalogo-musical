@@ -34,8 +34,8 @@
   {
     "id": "rock-alternativo",
     "name": "Rock Alternativo",
-    "image": "/images/genres/rock-alternativo.jpg",
-    "heroImage": "/images/genres/heroes/rock-alternativo-hero.jpg",
+    "image": "/images/genres/rock-alternative.jpg",
+    "heroImage": "/images/genres/heroes/rock-alternative-hero.jpg",
     "songsCount": 0,
     "artistsCount": 0
   },
@@ -55,7 +55,7 @@
     "songsCount": 150,
     "artistsCount": 10
   },
-    {
+  {
     "id": "corridos-tumbados",
     "name": "Corridos Tumbados",
     "image": "/images/genres/corridostumbados.jpg",
