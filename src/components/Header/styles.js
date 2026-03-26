@@ -107,3 +107,80 @@ export const IconButton = styled.button`
     transform: scale(1.1); 
   }
 `;
+export const UserMenuWrapper = styled.div`
+  position: relative;
+`;
+
+export const UserButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid rgba(103, 169, 67, 0.3);
+  border-radius: 20px;
+  padding: 6px 12px;
+  cursor: pointer;
+  color: #050708;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(103, 169, 67, 0.08);
+    border-color: #67A943;
+  }
+`;
+
+export const RoleBadge = styled.span`
+  font-size: 13px;
+  font-weight: 600;
+  color: ${props => props.$admin ? '#4D7F39' : '#67A943'};
+`;
+
+export const Dropdown = styled.div`
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: white;
+  border: 1px solid rgba(103, 169, 67, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  min-width: 180px;
+  overflow: hidden;
+  z-index: 100;
+`;
+
+export const DropdownHeader = styled.div`
+  padding: 12px 16px;
+  background: rgba(103, 169, 67, 0.06);
+`;
+
+export const DropdownRole = styled.p`
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: ${props => props.$admin ? '#4D7F39' : '#67A943'};
+`;
+
+export const DropdownDivider = styled.div`
+  height: 1px;
+  background: rgba(103, 169, 67, 0.15);
+`;
+
+export const DropdownItem = styled.button`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  transition: background 0.2s ease;
+  text-align: left;
+
+  &:hover {
+    background: rgba(255, 80, 80, 0.06);
+    color: #e53e3e;
+  }
+`;

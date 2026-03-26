@@ -1,11 +1,19 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { LoginModal } from './components/LoginModal';
 import { Home } from './pages/Home';
 import { GenreDetail } from './pages/GenreDetail';
 import { ArtistDetail } from './pages/ArtistDetail';
 import { AlbumDetail } from './pages/AlbumDetail';
 import { PDFViewer } from './pages/PDFViewer';
 
-function App() {
+function AppContent() {
+  const { user, loading } = useAuth();
+
+  if (loading) return null;
+
+  if (!user) return <LoginModal />;
+
   return (
     <BrowserRouter>
       <Routes>
@@ -16,6 +24,14 @@ function App() {
         <Route path="/pdf/:songId" element={<PDFViewer />} />
       </Routes>
     </BrowserRouter>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
