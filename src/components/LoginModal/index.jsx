@@ -8,6 +8,9 @@ export function LoginModal() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const handleKeyDown = (e) => {
+  if (e.key === 'Enter') handleLogin();
+    };
 
   const handleLogin = async () => {
     setLoading(true);
@@ -31,6 +34,7 @@ export function LoginModal() {
           placeholder="Correo electrónico"
           value={email}
           onChange={e => setEmail(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
 
         <PasswordWrapper>
@@ -39,6 +43,7 @@ export function LoginModal() {
             placeholder="Contraseña"
             value={password}
             onChange={e => setPassword(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
           <EyeButton onClick={() => setShowPassword(!showPassword)}>
             {showPassword ? '🙈' : '👁️'}

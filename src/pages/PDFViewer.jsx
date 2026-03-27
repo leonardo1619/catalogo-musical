@@ -1,12 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Document, Page, pdfjs } from 'react-pdf';
 import { supabase } from '../lib/supabase';
 import { GlobalStyles } from '../styles/GlobalStyles';
 import { Layout, Container } from '../components/Layout';
 import { colors } from '../styles/colors';
-import { FiArrowLeft, FiDownload, FiPrinter } from 'react-icons/fi';
+import { FiArrowLeft, FiDownload, FiPrinter, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { useAuth } from '../contexts/AuthContext';
 import { PaywallModal } from '../components/PaywallModal';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url,
+).toString();
 
 export function PDFViewer() {
   const { songId } = useParams();
@@ -16,6 +24,8 @@ export function PDFViewer() {
   const [song, setSong] = useState(null);
   const [loading, setLoading] = useState(true);
   const [paywallConfig, setPaywallConfig] = useState(null);
+  const [numPages, setNumPages] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
 
   useEffect(() => {
     async function fetchSong() {
@@ -67,7 +77,7 @@ export function PDFViewer() {
               fontSize: '1.5rem',
               color: colors.textSecondary
             }}>
-              Cargando canción...
+              Cargando partitura...
             </div>
           </Container>
         </Layout>
@@ -128,16 +138,7 @@ export function PDFViewer() {
             Volver
           </button>
 
-          <h1 style={{
-            color: colors.text,
-            fontSize: '1.5rem',
-            fontWeight: '700',
-            margin: 0,
-            flex: 1,
-            textAlign: 'center',
-          }}>
-            {song.title}
-          </h1>
+
 
           <div style={{ display: 'flex', gap: '1rem' }}>
             <button
@@ -182,30 +183,82 @@ export function PDFViewer() {
           </div>
         </div>
 
-        {/* Visor de PDF */}
+        {/* Visor PDF personalizado */}
         <div style={{
           padding: '2rem 4%',
           display: 'flex',
-          justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
           backgroundColor: colors.backgroundLight,
           minHeight: 'calc(100vh - 90px - 80px)',
+          gap: '1.5rem',
         }}>
-          <iframe
-            src={song.pdf}
-            style={{
-              width: '100%',
-              maxWidth: '1200px',
-              height: '80vh',
-              border: 'none',
+          <Document
+            file={song.pdf}
+            onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+            loading={
+              <div style={{ color: colors.textSecondary, fontSize: '1.2rem' }}>
+                Cargando páginas...
+              </div>
+            }
+          >
+            <Page
+              pageNumber={pageNumber}
+              width={Math.min(window.innerWidth * 0.85, 900)}
+              renderTextLayer={true}
+              renderAnnotationLayer={false}
+            />
+          </Document>
+
+          {/* Controles de paginación */}
+          {numPages && numPages > 1 && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '1rem',
+              backgroundColor: 'white',
+              padding: '0.75rem 1.5rem',
               borderRadius: '12px',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-            }}
-            title={song.title}
-          />
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+            }}>
+              <button
+                onClick={() => setPageNumber(p => Math.max(1, p - 1))}
+                disabled={pageNumber <= 1}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: pageNumber <= 1 ? 'not-allowed' : 'pointer',
+                  color: pageNumber <= 1 ? colors.textSecondary : colors.primary,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <FiChevronLeft size={24} />
+              </button>
+
+              <span style={{ color: colors.text, fontWeight: '600' }}>
+                Página {pageNumber} de {numPages}
+              </span>
+
+              <button
+                onClick={() => setPageNumber(p => Math.min(numPages, p + 1))}
+                disabled={pageNumber >= numPages}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: pageNumber >= numPages ? 'not-allowed' : 'pointer',
+                  color: pageNumber >= numPages ? colors.textSecondary : colors.primary,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <FiChevronRight size={24} />
+              </button>
+            </div>
+          )}
         </div>
       </Layout>
 
-      {/* Paywall Modal */}
       {paywallConfig && (
         <PaywallModal
           type="single"
