@@ -5,19 +5,22 @@ import { GlobalStyles } from '../styles/GlobalStyles';
 import { Layout, Container, Section } from '../components/Layout';
 import { SongRow } from '../components/SongRow';
 import { colors } from '../styles/colors';
+import { useAuth } from '../contexts/AuthContext';
+import { PaywallModal } from '../components/PaywallModal';
 
 export function AlbumDetail() {
   const { albumId } = useParams();
   const navigate = useNavigate();
-  
+  const { role } = useAuth();
+
   const [album, setAlbum] = useState(null);
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [paywallConfig, setPaywallConfig] = useState(null);
 
   useEffect(() => {
     async function fetchAlbumData() {
       try {
-        // Cargar álbum
         const { data: albumData, error: albumError } = await supabase
           .from('albums')
           .select('*')
@@ -25,19 +28,11 @@ export function AlbumDetail() {
           .single();
 
         if (albumError) throw albumError;
+        if (!albumData) { setLoading(false); return; }
 
-        if (!albumData) {
-          setLoading(false);
-          return;
-        }
-
-        // Cargar canciones del álbum con información de género
         const { data: songsData, error: songsError } = await supabase
           .from('songs')
-          .select(`
-            *,
-            genre:genres(name)
-          `)
+          .select(`*, genre:genres(name)`)
           .eq('album_id', albumData.id)
           .order('title');
 
@@ -74,14 +69,15 @@ export function AlbumDetail() {
   };
 
   const handleDownload = (song) => {
-    if (!song.pdf) {
-      alert('PDF no disponible');
-      return;
+    if (role === 'admin') {
+      if (!song.pdf) { alert('PDF no disponible'); return; }
+      const link = document.createElement('a');
+      link.href = song.pdf;
+      link.download = `${song.title}.pdf`;
+      link.click();
+    } else {
+      setPaywallConfig({ action: 'descargar', context: song.title, songCount: 1 });
     }
-    const link = document.createElement('a');
-    link.href = song.pdf;
-    link.download = `${song.title}.pdf`;
-    link.click();
   };
 
   if (loading) {
@@ -112,11 +108,7 @@ export function AlbumDetail() {
         <GlobalStyles />
         <Layout>
           <Container>
-            <div style={{ 
-              padding: '4rem 0', 
-              textAlign: 'center',
-              color: colors.text 
-            }}>
+            <div style={{ padding: '4rem 0', textAlign: 'center', color: colors.text }}>
               <h1>Álbum no encontrado</h1>
             </div>
           </Container>
@@ -129,7 +121,6 @@ export function AlbumDetail() {
     <>
       <GlobalStyles />
       <Layout>
-        {/* Hero del Álbum */}
         <div style={{
           height: '50vh',
           backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${album.image})`,
@@ -141,7 +132,7 @@ export function AlbumDetail() {
           flexDirection: 'column',
           gap: '1rem',
         }}>
-          <h1 style={{ 
+          <h1 style={{
             color: '#FFFFFF',
             fontSize: '5rem',
             textAlign: 'center',
@@ -151,7 +142,7 @@ export function AlbumDetail() {
           }}>
             {album.name}
           </h1>
-          <p style={{ 
+          <p style={{
             color: '#FFFFFF',
             fontSize: '1.5rem',
             textShadow: '0 2px 8px rgba(0,0,0,0.8)',
@@ -160,7 +151,7 @@ export function AlbumDetail() {
           }}>
             {songs.length} Canciones • Nivel {album.level}
           </p>
-          <p style={{ 
+          <p style={{
             color: '#FFD700',
             fontSize: '1.2rem',
             textShadow: '0 2px 8px rgba(0,0,0,0.8)',
@@ -170,24 +161,18 @@ export function AlbumDetail() {
           </p>
         </div>
 
-        {/* Lista de Canciones */}
         <Section>
           <Container>
-            <h2 style={{ 
-              color: colors.text, 
-              fontSize: '2.8rem', 
-              marginBottom: '2rem' 
-            }}>
+            <h2 style={{ color: colors.text, fontSize: '2.8rem', marginBottom: '2rem' }}>
               Canciones del Álbum
             </h2>
-            
+
             {songs.length === 0 ? (
               <p style={{ color: colors.textSecondary }}>
                 No hay canciones disponibles en este álbum
               </p>
             ) : (
               <div>
-                {/* Header de la tabla */}
                 <div style={{
                   display: 'grid',
                   gridTemplateColumns: '60px 1fr 150px 150px 80px',
@@ -207,7 +192,6 @@ export function AlbumDetail() {
                   <div style={{ textAlign: 'center' }}>Descargar</div>
                 </div>
 
-                {/* Filas de canciones */}
                 {songs.map((song, index) => (
                   <SongRow
                     key={song.id}
@@ -220,10 +204,20 @@ export function AlbumDetail() {
                   />
                 ))}
               </div>
-            )}  
+            )}
           </Container>
         </Section>
       </Layout>
+
+      {paywallConfig && (
+        <PaywallModal
+          type="single"
+          songCount={paywallConfig.songCount}
+          context={paywallConfig.context}
+          action={paywallConfig.action}
+          onClose={() => setPaywallConfig(null)}
+        />
+      )}
     </>
   );
 }

@@ -10,7 +10,7 @@ export function PaywallModal({ type = 'single', songCount = 1, context = '', act
       <Modal onClick={e => e.stopPropagation()}>
         <Icon>🎵</Icon>
         <Title>
-          {action === 'descargar' ? 'Descargar' : 'Imprimir'} Partitura
+          {action === 'descargar' ? 'Descargar' : 'Imprimir'} Material
         </Title>
         <Context>{context}</Context>
         <Price>${totalPrice} MXN</Price>

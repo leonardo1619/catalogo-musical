@@ -1,28 +1,79 @@
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 import { GlobalStyles } from '../styles/GlobalStyles';
 import { Layout, Container } from '../components/Layout';
 import { colors } from '../styles/colors';
-import songsData from '../data/songs.json';
 import { FiArrowLeft, FiDownload, FiPrinter } from 'react-icons/fi';
+import { useAuth } from '../contexts/AuthContext';
+import { PaywallModal } from '../components/PaywallModal';
 
 export function PDFViewer() {
   const { songId } = useParams();
   const navigate = useNavigate();
-  const song = songsData.find(s => s.id === songId);
+  const { role } = useAuth();
+
+  const [song, setSong] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [paywallConfig, setPaywallConfig] = useState(null);
+
+  useEffect(() => {
+    async function fetchSong() {
+      const { data, error } = await supabase
+        .from('songs')
+        .select('*')
+        .eq('slug', songId)
+        .single();
+
+      if (!error && data) {
+        setSong({ title: data.title, pdf: data.pdf_url });
+      }
+      setLoading(false);
+    }
+    fetchSong();
+  }, [songId]);
 
   const handleDownload = () => {
-    const link = document.createElement('a');
-    link.href = song.pdf;
-    link.download = `${song.title}.pdf`;
-    link.click();
+    if (role === 'admin') {
+      const link = document.createElement('a');
+      link.href = song.pdf;
+      link.download = `${song.title}.pdf`;
+      link.click();
+    } else {
+      setPaywallConfig({ action: 'descargar', context: song.title, songCount: 1 });
+    }
   };
 
   const handlePrint = () => {
-    const printWindow = window.open(song.pdf);
-    printWindow.onload = () => {
-      printWindow.print();
-    };
+    if (role === 'admin') {
+      const printWindow = window.open(song.pdf);
+      printWindow.onload = () => printWindow.print();
+    } else {
+      setPaywallConfig({ action: 'imprimir', context: song.title, songCount: 1 });
+    }
   };
+
+  if (loading) {
+    return (
+      <>
+        <GlobalStyles />
+        <Layout>
+          <Container>
+            <div style={{
+              height: '80vh',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.5rem',
+              color: colors.textSecondary
+            }}>
+              Cargando canción...
+            </div>
+          </Container>
+        </Layout>
+      </>
+    );
+  }
 
   if (!song) {
     return (
@@ -30,15 +81,9 @@ export function PDFViewer() {
         <GlobalStyles />
         <Layout>
           <Container>
-            <div style={{ 
-              padding: '4rem 0', 
-              textAlign: 'center',
-              color: colors.text 
-            }}>
+            <div style={{ padding: '4rem 0', textAlign: 'center', color: colors.text }}>
               <h1>Canción no encontrada</h1>
-              <button onClick={() => navigate(-1)}>
-                ← Volver
-              </button>
+              <button onClick={() => navigate(-1)}>← Volver</button>
             </div>
           </Container>
         </Layout>
@@ -53,7 +98,7 @@ export function PDFViewer() {
         {/* Header con controles */}
         <div style={{
           position: 'sticky',
-          top: '90px', // Debajo del header principal
+          top: '90px',
           backgroundColor: colors.background,
           borderBottom: `1px solid ${colors.backgroundLight}`,
           padding: '1rem 4%',
@@ -63,7 +108,6 @@ export function PDFViewer() {
           zIndex: 100,
           boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
         }}>
-          {/* Botón Volver */}
           <button
             onClick={() => navigate(-1)}
             style={{
@@ -78,22 +122,12 @@ export function PDFViewer() {
               fontSize: '1rem',
               fontWeight: '600',
               cursor: 'pointer',
-              transition: 'all 0.3s ease',
-            }}
-            onMouseOver={(e) => {
-              e.target.style.backgroundColor = colors.primary;
-              e.target.style.color = 'white';
-            }}
-            onMouseOut={(e) => {
-              e.target.style.backgroundColor = 'transparent';
-              e.target.style.color = colors.primary;
             }}
           >
             <FiArrowLeft size={20} />
             Volver
           </button>
 
-          {/* Título */}
           <h1 style={{
             color: colors.text,
             fontSize: '1.5rem',
@@ -105,7 +139,6 @@ export function PDFViewer() {
             {song.title}
           </h1>
 
-          {/* Botones de acción */}
           <div style={{ display: 'flex', gap: '1rem' }}>
             <button
               onClick={handleDownload}
@@ -121,15 +154,6 @@ export function PDFViewer() {
                 fontSize: '1rem',
                 fontWeight: '600',
                 cursor: 'pointer',
-                transition: 'all 0.3s ease',
-              }}
-              onMouseOver={(e) => {
-                e.target.style.backgroundColor = colors.primaryDark;
-                e.target.style.transform = 'scale(1.05)';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.backgroundColor = colors.primary;
-                e.target.style.transform = 'scale(1)';
               }}
             >
               <FiDownload size={20} />
@@ -150,13 +174,6 @@ export function PDFViewer() {
                 fontSize: '1rem',
                 fontWeight: '600',
                 cursor: 'pointer',
-                transition: 'all 0.3s ease',
-              }}
-              onMouseOver={(e) => {
-                e.target.style.backgroundColor = colors.hover;
-              }}
-              onMouseOut={(e) => {
-                e.target.style.backgroundColor = colors.backgroundCard;
               }}
             >
               <FiPrinter size={20} />
@@ -171,7 +188,7 @@ export function PDFViewer() {
           display: 'flex',
           justifyContent: 'center',
           backgroundColor: colors.backgroundLight,
-          minHeight: 'calc(100vh - 90px - 80px)', // Pantalla completa menos headers
+          minHeight: 'calc(100vh - 90px - 80px)',
         }}>
           <iframe
             src={song.pdf}
@@ -187,6 +204,17 @@ export function PDFViewer() {
           />
         </div>
       </Layout>
+
+      {/* Paywall Modal */}
+      {paywallConfig && (
+        <PaywallModal
+          type="single"
+          songCount={paywallConfig.songCount}
+          context={paywallConfig.context}
+          action={paywallConfig.action}
+          onClose={() => setPaywallConfig(null)}
+        />
+      )}
     </>
   );
 }

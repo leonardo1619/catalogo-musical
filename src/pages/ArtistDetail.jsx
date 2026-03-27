@@ -5,20 +5,23 @@ import { GlobalStyles } from '../styles/GlobalStyles';
 import { Layout, Container, Section } from '../components/Layout';
 import { SongRow } from '../components/SongRow';
 import { colors } from '../styles/colors';
+import { useAuth } from '../contexts/AuthContext';
+import { PaywallModal } from '../components/PaywallModal';
 
 export function ArtistDetail() {
   const { genreId, artistId } = useParams();
   const navigate = useNavigate();
-  
+  const { role } = useAuth();
+
   const [artist, setArtist] = useState(null);
   const [genre, setGenre] = useState(null);
   const [songs, setSongs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [paywallConfig, setPaywallConfig] = useState(null);
 
   useEffect(() => {
     async function fetchArtistData() {
       try {
-        // Cargar artista
         const { data: artistData, error: artistError } = await supabase
           .from('artists')
           .select('*')
@@ -26,13 +29,8 @@ export function ArtistDetail() {
           .single();
 
         if (artistError) throw artistError;
+        if (!artistData) { setLoading(false); return; }
 
-        if (!artistData) {
-          setLoading(false);
-          return;
-        }
-
-        // Cargar género del artista
         const { data: genreData, error: genreError } = await supabase
           .from('genres')
           .select('*')
@@ -41,13 +39,9 @@ export function ArtistDetail() {
 
         if (genreError) throw genreError;
 
-        // Cargar canciones del artista con información de género
         const { data: songsData, error: songsError } = await supabase
           .from('songs')
-          .select(`
-            *,
-            genre:genres(name)
-          `)
+          .select(`*, genre:genres(name)`)
           .eq('artist_id', artistData.id)
           .order('title');
 
@@ -88,14 +82,15 @@ export function ArtistDetail() {
   };
 
   const handleDownload = (song) => {
-    if (!song.pdf) {
-      alert('PDF no disponible');
-      return;
+    if (role === 'admin') {
+      if (!song.pdf) { alert('PDF no disponible'); return; }
+      const link = document.createElement('a');
+      link.href = song.pdf;
+      link.download = `${song.title}.pdf`;
+      link.click();
+    } else {
+      setPaywallConfig({ action: 'descargar', context: song.title, songCount: 1 });
     }
-    const link = document.createElement('a');
-    link.href = song.pdf;
-    link.download = `${song.title}.pdf`;
-    link.click();
   };
 
   if (loading) {
@@ -126,11 +121,7 @@ export function ArtistDetail() {
         <GlobalStyles />
         <Layout>
           <Container>
-            <div style={{ 
-              padding: '4rem 0', 
-              textAlign: 'center', 
-              color: colors.text 
-            }}>
+            <div style={{ padding: '4rem 0', textAlign: 'center', color: colors.text }}>
               <h1>Artista no encontrado</h1>
             </div>
           </Container>
@@ -143,7 +134,6 @@ export function ArtistDetail() {
     <>
       <GlobalStyles />
       <Layout>
-        {/* Hero del Artista */}
         <div style={{
           height: '50vh',
           backgroundImage: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.7)), url(${artist.heroImage || artist.image})`,
@@ -155,7 +145,7 @@ export function ArtistDetail() {
           flexDirection: 'column',
           gap: '1rem',
         }}>
-          <h1 style={{ 
+          <h1 style={{
             color: '#FFFFFF',
             fontSize: '5rem',
             textAlign: 'center',
@@ -165,7 +155,7 @@ export function ArtistDetail() {
           }}>
             {artist.name}
           </h1>
-          <p style={{ 
+          <p style={{
             color: '#FFFFFF',
             fontSize: '1.5rem',
             textShadow: '0 2px 8px rgba(0,0,0,0.8)',
@@ -176,24 +166,18 @@ export function ArtistDetail() {
           </p>
         </div>
 
-        {/* Lista de Canciones */}
         <Section>
           <Container>
-            <h2 style={{ 
-              color: colors.text, 
-              fontSize: '1.8rem', 
-              marginBottom: '2rem' 
-            }}>
+            <h2 style={{ color: colors.text, fontSize: '1.8rem', marginBottom: '2rem' }}>
               Canciones
             </h2>
-            
+
             {songs.length === 0 ? (
               <p style={{ color: colors.textSecondary }}>
                 No hay canciones disponibles para {artist.name}
               </p>
             ) : (
               <div>
-                {/* Header de la tabla */}
                 <div style={{
                   display: 'grid',
                   gridTemplateColumns: '60px 1fr 150px 150px 80px',
@@ -213,7 +197,6 @@ export function ArtistDetail() {
                   <div style={{ textAlign: 'center' }}>Descargar</div>
                 </div>
 
-                {/* Filas de canciones */}
                 {songs.map((song, index) => (
                   <SongRow
                     key={song.id}
@@ -230,6 +213,16 @@ export function ArtistDetail() {
           </Container>
         </Section>
       </Layout>
+
+      {paywallConfig && (
+        <PaywallModal
+          type="single"
+          songCount={paywallConfig.songCount}
+          context={paywallConfig.context}
+          action={paywallConfig.action}
+          onClose={() => setPaywallConfig(null)}
+        />
+      )}
     </>
   );
 }
