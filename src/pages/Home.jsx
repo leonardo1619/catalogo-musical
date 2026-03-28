@@ -132,7 +132,7 @@ export function Home() {
             padding: '0 1rem',
             margin: 0,
           }}>
-            🎵 Catálogo Musical
+            Catálogo Musical
           </h1>
           
           {/* Subtítulo */}
@@ -142,7 +142,7 @@ export function Home() {
             textAlign: 'center',
             margin: 0,
           }}>
-            Academia de Arte Musical
+            Disfruta de una amplia variedad de géneros y álbumes para aprender y practicar. ¡Explora y encuentra tu próximo desafío musical! 🎶
           </p>
         </div>
 

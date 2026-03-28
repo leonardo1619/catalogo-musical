@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { supabase } from '../../lib/supabase';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 export function LoginModal() {
   const [email, setEmail] = useState('');
@@ -8,9 +9,10 @@ export function LoginModal() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
   const handleKeyDown = (e) => {
-  if (e.key === 'Enter') handleLogin();
-    };
+    if (e.key === 'Enter') handleLogin();
+  };
 
   const handleLogin = async () => {
     setLoading(true);
@@ -25,9 +27,11 @@ export function LoginModal() {
   return (
     <Overlay>
       <Modal>
-        <Logo>🎵</Logo>
+        <LogoImg src="/images/LOGOADA.png" alt="Academia de Arte Musical" />
         <Title>Academia de Arte Musical</Title>
+        <CatalogTag>Catálogo Musical</CatalogTag>
         <Subtitle>ACCESO USUARIOS</Subtitle>
+        
 
         <Input
           type="email"
@@ -45,9 +49,9 @@ export function LoginModal() {
             onChange={e => setPassword(e.target.value)}
             onKeyDown={handleKeyDown}
           />
-          <EyeButton onClick={() => setShowPassword(!showPassword)}>
-            {showPassword ? '🙈' : '👁️'}
-          </EyeButton>
+<EyeButton onClick={() => setShowPassword(!showPassword)}>
+  {showPassword ? <FiEyeOff size={18} color="#aaaaaa" /> : <FiEye size={18} color="#aaaaaa" />}
+</EyeButton>
         </PasswordWrapper>
 
         {error && <ErrorMsg>{error}</ErrorMsg>}
@@ -63,7 +67,7 @@ export function LoginModal() {
 const Overlay = styled.div`
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: linear-gradient(135deg, #1a3a0f 0%, #2d5a1b 40%, #4D7F39 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -71,9 +75,7 @@ const Overlay = styled.div`
 `;
 
 const Modal = styled.div`
-  background: rgba(103, 169, 67, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(103, 169, 67, 0.3);
+  background: #ffffff;
   border-radius: 16px;
   padding: 40px 32px;
   width: 90%;
@@ -82,25 +84,32 @@ const Modal = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 16px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 `;
 
-const Logo = styled.div`
-  font-size: 48px;
+const LogoImg = styled.img`
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  border-radius: 50%;
 `;
 
 const Title = styled.h2`
-  color: #ffffff;
+  color: #1a1a1a;
   font-size: 18px;
   font-weight: 700;
   text-align: center;
   margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 `;
 
 const Subtitle = styled.p`
-  color: #87BB88;
-  font-size: 13px;
+  color: #67A943;
+  font-size: 12px;
   letter-spacing: 2px;
   margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 `;
 
 const Input = styled.input`
@@ -108,18 +117,20 @@ const Input = styled.input`
   padding: 12px 16px;
   border-radius: 8px;
   border: 1px solid rgba(103, 169, 67, 0.4);
-  background: rgba(255, 255, 255, 0.05);
-  color: #ffffff;
+  background: #f9f9f9;
+  color: #1a1a1a;
   font-size: 15px;
   outline: none;
   box-sizing: border-box;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.4);
+    color: #aaaaaa;
   }
 
   &:focus {
     border-color: #67A943;
+    background: #ffffff;
   }
 `;
 
@@ -141,9 +152,10 @@ const EyeButton = styled.button`
 `;
 
 const ErrorMsg = styled.p`
-  color: #ff6b6b;
+  color: #e53e3e;
   font-size: 13px;
   margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 `;
 
 const LoginButton = styled.button`
@@ -159,6 +171,7 @@ const LoginButton = styled.button`
   cursor: pointer;
   margin-top: 8px;
   min-height: 44px;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
   &:disabled {
     opacity: 0.6;
@@ -167,4 +180,12 @@ const LoginButton = styled.button`
   &:active {
     background: #4D7F39;
   }
+`;
+
+const CatalogTag = styled.p`
+  color: #4D7F39;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 `;

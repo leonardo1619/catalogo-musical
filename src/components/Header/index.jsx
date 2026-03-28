@@ -51,7 +51,7 @@ export function Header() {
     <>
       <S.Container $scrolled={scrolled}>
         <S.Logo $scrolled={scrolled} onClick={() => navigate('/')}>
-          🎵 Academia de Arte Musical
+          Academia de Arte Musical
         </S.Logo>
 
         <S.Nav>
